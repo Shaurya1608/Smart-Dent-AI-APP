@@ -1,28 +1,30 @@
-"use client"
-import AdminStats from '@/components/admin/AdminStats';
-import DoctorsManagement from '@/components/admin/DoctorsManagement';
-import Navbar from '@/components/Navbar'
-import { useGetAppointments } from '@/hooks/use-appointment';
-import { useGetDoctors } from '@/hooks/use-doctors';
-import { useUser } from '@clerk/nextjs';
-import { SettingsIcon } from 'lucide-react';
+"use client";
+
+import AdminStats from "@/components/admin/AdminStats";
+import DoctorsManagement from "@/components/admin/DoctorsManagement";
+import RecentAppointments from "@/components/admin/RecentAppointments";
+import Navbar from "@/components/Navbar";
+import { useGetAppointments } from "@/hooks/use-appointment";
+import { useGetDoctors } from "@/hooks/use-doctors";
+import { useUser } from "@clerk/nextjs";
+import { SettingsIcon } from "lucide-react";
 
 function AdminDashboardClient() {
-    const {user} = useUser();
-    const {data: doctors=[] , isLoading: doctorsLoading} = useGetDoctors();
-    const {data: appointments=[] , isLoading: appointmentsLoading} = useGetAppointments();
+  const { user } = useUser();
+  const { data: doctors = [], isLoading: doctorsLoading } = useGetDoctors();
+  const { data: appointments = [], isLoading: appointmentsLoading } = useGetAppointments();
 
-     const stats = {
+  // calculate stats from real data
+  const stats = {
     totalDoctors: doctors.length,
     activeDoctors: doctors.filter((doc) => doc.isActive).length,
     totalAppointments: appointments.length,
     completedAppointments: appointments.filter((app) => app.status === "COMPLETED").length,
   };
-        
-        if (doctorsLoading || appointmentsLoading) return <LoadingUI />
-       
 
- return (
+  if (doctorsLoading || appointmentsLoading) return <LoadingUI />;
+
+  return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -50,7 +52,8 @@ function AdminDashboardClient() {
             </div>
           </div>
         </div>
-         <AdminStats
+
+        <AdminStats
           totalDoctors={stats.totalDoctors}
           activeDoctors={stats.activeDoctors}
           totalAppointments={stats.totalAppointments}
@@ -59,14 +62,13 @@ function AdminDashboardClient() {
 
         <DoctorsManagement />
 
-
-       
+        <RecentAppointments />
       </div>
     </div>
   );
 }
 
-export default AdminDashboardClient
+export default AdminDashboardClient;
 
 function LoadingUI() {
   return (
